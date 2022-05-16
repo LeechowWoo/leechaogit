@@ -33,9 +33,13 @@ public class LoginCheckFilter implements Filter {
             "/employee/logout",
             "/backend/**",//静态资源直接放行，静态资源可以被直接查看，重要的是不会被看见controller中的数据
             "/front/**",
-                "/common/**",
-                "/user/sendMsg",
-                "/user/login"
+            "/common/**",
+            "/user/sendMsg",
+            "/user/login",
+            "/doc.html",
+            "/webjars/**",
+            "/swagger-resources",
+            "/v2/api-docs"
         };
 
         //2、判断本次请求是否需要处理

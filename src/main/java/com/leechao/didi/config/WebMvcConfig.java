@@ -1,17 +1,28 @@
 package com.leechao.didi.config;
 
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import com.leechao.didi.common.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
 
 @Slf4j
 @Configuration
+@EnableSwagger2  //表示开启了swagger功能
+@EnableKnife4j   //表示开启了swagger功能
 public class WebMvcConfig extends WebMvcConfigurationSupport {
     /**
      * 设置静态资源的映射
@@ -20,6 +31,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始进行静态资源映射!");
+        registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
         //将resources目录下的/backend/**映射为classpath:/backend/
         registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/backend/");
         registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
@@ -40,5 +53,24 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         messageConverter.setObjectMapper(new JacksonObjectMapper());
         //将上面的消息转换器追加到MVC框架的转换器集合中
         converters.add(0,messageConverter);//将自定义的转换器放在最前面(通过数组下标的方式)
+    }
+
+    @Bean
+    public Docket createRestApi() {
+        // 文档类型
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.leechao.didi.controller"))//框架扫描到controller所在包，然后将对应的接口文档生成出来
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("滴滴外送")
+                .version("1.0")
+                .description("滴滴外送接口文档")
+                .build();
     }
 }
