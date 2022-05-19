@@ -35,7 +35,7 @@ public class EmployeeController {
         String password = employee.getPassword();//页面提交的密码已经封装到employee对象中，通过解析这个对象就可获得需要的账号密码
         password = DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8));
 
-        //2、根据页面提交的账号查询数据库??????
+        //2、根据页面提交的账号查询数据库
         LambdaQueryWrapper<Employee>queryWrapper = new LambdaQueryWrapper<>();//包装一个查询对象
         queryWrapper.eq(Employee::getUsername,employee.getUsername());//添加一个查询条件(等值查询)
         Employee emp = employeeService.getOne(queryWrapper);
